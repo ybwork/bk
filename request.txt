@@ -1,5 +1,0 @@
-http GET http://127.0.0.1:5000/balance api_key=ccc42a8314596799
-
-http POST http://127.0.0.1:5000/balance api_key=ccc42a8314596799
-
-http GET http://127.0.0.1:5000/balance api_key=ccc42a8314596799 number_invoice=5956f
