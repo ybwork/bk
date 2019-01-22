@@ -19,17 +19,23 @@ def exchange_format():
 
 @views.before_request
 def auth():
-    form = AuthForm()
-
-    if not form.validate_on_submit():
+    try:
+        api_key = request.get_json()['api_key']
+    except KeyError:
         return send_json_response(
-            message=form.errors,
+            message='Not sended api_key',
             status_code=400
         )
 
-    if not is_valid_api_key(api_key=form.api_key.data):
+    if not api_key:
         return send_json_response(
-            message={'message': 'Auth is not valid'},
+            message={'message': 'Api key required'},
+            status_code=401
+        )
+
+    if not is_valid_api_key(api_key=api_key):
+        return send_json_response(
+            message={'message': 'Api key is not valid'},
             status_code=401
         )
 

@@ -2,16 +2,18 @@ import os
 
 from flask import Blueprint
 
+from models import Bank, Client
 from utils import send_json_response
 
 views = Blueprint('views', __name__)
 
-# from middleware import *
+from middleware import *
 
 
-@views.route('/', methods=['GET', 'POST'])
-def home():
+@views.route('/balance', methods=['GET'])
+def balance():
+    # print(Client.query.with_parent(id))
     return send_json_response(
-        message={'message': os.urandom(16).hex()},
+        message={'message': request.get_json()},
         status_code=200
     )
