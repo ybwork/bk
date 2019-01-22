@@ -1,6 +1,5 @@
 from flask import request
 
-from forms import AuthForm
 from models import App
 from utils import send_json_response
 from views import views
