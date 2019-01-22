@@ -1,5 +1,4 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Table
 
 db = SQLAlchemy()
 
@@ -14,6 +13,7 @@ class Bank(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     balance = db.Column(db.DECIMAL(10, 2), nullable=False)
+    invoices = db.relationship('Invoice', backref='invoice', lazy=True)
 
 
 class Client(db.Model):
@@ -22,36 +22,16 @@ class Client(db.Model):
     email = db.Column(db.String(255), nullable=False)
 
 
-bank_client = db.Table(
-    'bank_client',
-    db.Column(
-        'id',
-        db.Integer,
-        primary_key=True
-    ),
-    db.Column(
-        'bank_id',
-        db.Integer,
-        db.ForeignKey('bank.id'),
-        primary_key=True
-    ),
-    db.Column(
-        'client_id',
+class Invoice(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    num = db.Column(db.String(5), nullable=False)
+    balance = db.Column(db.DECIMAL(10, 2), nullable=False)
+    bank_id = db.Column(db.Integer, db.ForeignKey('bank.id'), nullable=False)
+    client_id = db.Column(
         db.Integer,
         db.ForeignKey('client.id'),
-        primary_key=True
-    ),
-    db.Column(
-        'number_invoice',
-        db.String(5),
-        nullable=False
-    ),
-    db.Column(
-        'balance',
-        db.DECIMAL(10, 2),
         nullable=False
     )
-)
 
 
 class StatusOperation(db.Model):
@@ -70,4 +50,5 @@ class Operation(db.Model):
         db.ForeignKey('status_operation.id'),
         nullable=False
     )
+
 
