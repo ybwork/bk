@@ -3,7 +3,7 @@ from random import random, randint
 from flask import Blueprint
 
 from models import Invoice, db
-from utils import send_json_response
+from utils import send_json_response, send_payment_confirm_code_to_client
 
 views = Blueprint('views', __name__)
 
@@ -33,28 +33,23 @@ def show(num):
 @views.route('/v1/payment_confirm_codes', methods=['POST'])
 def create():
     try:
-        # взять пользователя по счёту
+        payment_confirm_code = randint(100, 1000)
+
+        # Сохраняю код подтверждения в базу
         invoice = Invoice.query.filter_by(
             num=request.get_json()['invoice']
         ).first()
-
-        # сгенерить код
-        payment_confirm_code = randint(100, 1000)
-
-        # записать код в базу
         invoice.client.payment_confirm_code = payment_confirm_code
         db.session.add(invoice.client)
         db.session.commit()
 
-        # отправить код на почту (сейчас в файл)
-        with open('email.txt', 'w') as file:
-            file.write(str(payment_confirm_code))
+        send_payment_confirm_code_to_client(code=payment_confirm_code)
 
         message = {
             'message': 'ok'
         }
         status_code=200
-    except(KeyError, ValueError):
+    except(KeyError, ValueError, AttributeError):
         message = {
             'error': 'Number invoice does not exists or invalid'
         }
