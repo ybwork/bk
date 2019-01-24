@@ -8,12 +8,10 @@ views = Blueprint('views', __name__)
 from middleware import *
 
 
-@views.route('/balance', methods=['GET'])
-def balance():
+@views.route('/invoice/<num>/balance', methods=['GET'])
+def get(num):
     try:
-        invoice = Invoice.query.filter_by(
-            num=request.get_json()['number_invoice']
-        ).first()
+        invoice = Invoice.query.filter_by(num=num).first()
         message = {
             'balance': str(invoice.balance)
         }
@@ -27,4 +25,12 @@ def balance():
     return send_json_response(
         message=message,
         status_code=status_code
+    )
+
+
+@views.route('/payment_confirm_codes', methods=['POST'])
+def create():
+    return send_json_response(
+        message='code',
+        status_code=200
     )
