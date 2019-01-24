@@ -20,6 +20,8 @@ class Client(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(255), nullable=False)
+    payment_confirm_code = db.Column(db.Integer, nullable=True)
+    invoices = db.relationship('Invoice', backref='client', lazy=True)
 
 
 class Invoice(db.Model):
