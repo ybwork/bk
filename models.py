@@ -20,6 +20,7 @@ class Client(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(255), nullable=False)
+    invoices = db.relationship('Invoice', backref='client', lazy=True)
 
 
 class Invoice(db.Model):
@@ -34,20 +35,21 @@ class Invoice(db.Model):
     )
 
 
-class StatusOperation(db.Model):
+class StatusPayment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
 
 
-class Operation(db.Model):
+class Payment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     key = db.Column(db.String(5), nullable=False)
     amount_money = db.Column(db.DECIMAL(10, 2), nullable=False)
-    number_invoice_provider = db.Column(db.String(5), nullable=False)
-    number_invoice_reciever = db.Column(db.String(5), nullable=False)
+    invoice_provider = db.Column(db.String(5), index=True, nullable=False)
+    invoice_reciever = db.Column(db.String(5), nullable=False)
+    code_confirm = db.Column(db.Integer, index=True, nullable=True)
     status_id = db.Column(
         db.Integer,
-        db.ForeignKey('status_operation.id'),
+        db.ForeignKey('status_payment.id'),
         nullable=False
     )
 
