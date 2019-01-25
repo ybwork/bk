@@ -45,7 +45,6 @@ def create_payment():
     invoice_reciever=5956
     """
     form = PaymentForm()
-
     if form.validate_on_submit():
         payment = request.get_json()
         key = get_payment_key()
@@ -63,7 +62,7 @@ def create_payment():
         )
         db.session.commit()
 
-        send_payment_confirm_code_to_client(code_confirm)
+        send_code_confirm_payment_to_client(code_confirm)
 
         return send_json_response(
             message={'message': 'ok'},

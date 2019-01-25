@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import DecimalField, StringField, IntegerField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, Length
 
 
 class PaymentForm(FlaskForm):
@@ -8,13 +8,15 @@ class PaymentForm(FlaskForm):
     invoice_provider = StringField(
         'invoice_provider',
         validators=[
-            DataRequired()
+            DataRequired(),
+            Length(max=5)
         ]
     )
     invoice_reciever = StringField(
         'invoice_reciever',
         validators=[
-            DataRequired()
+            DataRequired(),
+            Length(max=5)
         ]
     )
 
