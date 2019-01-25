@@ -2,6 +2,8 @@ from uuid import uuid4
 
 from flask import jsonify
 
+from models import Payment
+
 
 def send_json_response(message, status_code):
     response = jsonify(message)
@@ -16,3 +18,4 @@ def send_payment_confirm_code_to_client(code):
 
 def get_payment_key():
     return str(uuid4())[:5]
+

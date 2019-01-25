@@ -44,9 +44,9 @@ class Payment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     key = db.Column(db.String(5), nullable=False)
     amount_money = db.Column(db.DECIMAL(10, 2), nullable=False)
-    invoice_provider = db.Column(db.String(5), nullable=False)
+    invoice_provider = db.Column(db.String(5), index=True, nullable=False)
     invoice_reciever = db.Column(db.String(5), nullable=False)
-    code_confirm = db.Column(db.Integer, nullable=True)
+    code_confirm = db.Column(db.Integer, index=True, nullable=True)
     status_id = db.Column(
         db.Integer,
         db.ForeignKey('status_payment.id'),

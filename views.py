@@ -1,6 +1,4 @@
-import json
-from random import random, randint
-from uuid import uuid4
+from random import randint
 
 from flask import Blueprint
 
@@ -22,20 +20,19 @@ def show(num):
     """
     try:
         invoice = Invoice.query.filter_by(num=num).first()
-        message = {
-            'balance': str(invoice.balance)
-        }
-        status_code=200
+        return send_json_response(
+            message={
+                'balance': str(invoice.balance)
+            },
+            status_code=200
+        )
     except (KeyError, AttributeError):
-        message = {
-            'error': 'Number invoice does not exists or invalid'
-        }
-        status_code = 400
-
-    return send_json_response(
-        message=message,
-        status_code=status_code
-    )
+        return send_json_response(
+            message={
+                'error': 'Number invoice does not exists or invalid'
+            },
+            status_code=400
+        )
 
 
 @views.route('/v1/payments', methods=['POST'])
@@ -68,22 +65,37 @@ def create_payment():
 
         send_payment_confirm_code_to_client(code_confirm)
 
-        message = {'message': 'ok'}
-        status_code = 400
-    else:
-        message = form.errors
-        status_code = 400
+        return send_json_response(
+            message={'message': 'ok'},
+            status_code=200
+        )
 
     return send_json_response(
-        message=message,
-        status_code=status_code
+        message=form.errors,
+        status_code=400
     )
 
 
-@views.route('/v1/payment_confirm_codes/check', methods=['POST'])
-def check():
+@views.route('/v1/payments/confirm', methods=['POST'])
+def confirm_payment():
     """
-     http GET http://127.0.0.1:5000/v1/payment_confirm_codes/check
-     api_key=ccc42a8314596799 code=152
+     http GET http://127.0.0.1:5000/v1/payments/confirm
+     api_key=ccc42a8314596799 invoice=5956 code=372
     """
-    pass
+    confirm_params = request.get_json()
+
+    payment = Payment.query.filter_by(
+        invoice_provider=confirm_params['invoice'],
+        code_confirm=confirm_params['code_confirm']
+    ).scalar()
+
+    if payment:
+        return send_json_response(
+            message={'key': payment.key},
+            status_code=200
+        )
+
+    return send_json_response(
+        message={'message': 'Code invalid'},
+        status_code=400
+    )
