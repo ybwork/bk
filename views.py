@@ -4,7 +4,7 @@ from flask import Blueprint
 
 from forms import PaymentForm
 from models import Invoice, db, Payment
-from utils import send_json_response, send_payment_confirm_code_to_client, \
+from utils import send_json_response, send_code_confirm_payment_to_client, \
     get_payment_key
 
 views = Blueprint('views', __name__)

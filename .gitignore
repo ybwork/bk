@@ -2,4 +2,4 @@
 __pycache__/
 local_settings.py
 *.pyc
-payment_confirm_code.txt
+code_confirm_payment.txt

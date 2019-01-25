@@ -12,7 +12,7 @@ def send_json_response(message, status_code):
 
 
 def send_code_confirm_payment_to_client(code):
-    with open('payment_confirm_code.txt', 'w') as file:
+    with open('code_confirm_payment.txt', 'w') as file:
         file.write(str(code))
 
 
