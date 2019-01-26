@@ -95,6 +95,6 @@ def confirm_payment():
         )
 
     return send_json_response(
-        message={'message': 'Code invalid'},
+        message={'message': 'Invalid code'},
         status_code=400
     )
