@@ -13,7 +13,7 @@ from middleware import *
 
 
 @views.route('/v1/invoices/<num>/balances', methods=['GET'])
-def show(num):
+def show_balance_invoice(num):
     """
      http GET http://127.0.0.1:5000/v1/invoices/5956f/balances
      api_key=ccc42a8314596799
@@ -54,8 +54,8 @@ def create_payment():
             Payment(
                 key=key,
                 amount_money=payment['amount_money'],
-                invoice_provider=payment['invoice_provider'],
-                invoice_reciever=payment['invoice_reciever'],
+                number_invoice_provider=payment['number_invoice_provider'],
+                number_invoice_reciever=payment['number_invoice_reciever'],
                 code_confirm=code_confirm,
                 status_id=1
             )
