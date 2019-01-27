@@ -29,9 +29,9 @@ def show_balance_invoice(num):
     except (KeyError, AttributeError):
         return send_json_response(
             message={
-                'error': 'Number invoice does not exists or invalid'
+                'error': 'Number invoice does not exists'
             },
-            status_code=400
+            status_code=404
         )
 
 
@@ -81,11 +81,11 @@ def confirm_payment():
      http GET http://127.0.0.1:5000/v1/payments/confirm
      api_key=ccc42a8314596799 invoice=5956 code=372
     """
-    confirm_params = request.get_json()
+    req = request.get_json()
 
     payment = Payment.query.filter_by(
-        invoice_provider=confirm_params['invoice'],
-        code_confirm=confirm_params['code_confirm']
+        number_invoice_provider=req['invoice'],
+        code_confirm=req['code_confirm']
     ).scalar()
 
     if payment:
