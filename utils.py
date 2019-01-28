@@ -2,11 +2,9 @@ from uuid import uuid4
 
 from flask import jsonify
 
-from models import Payment
 
-
-def send_json_response(message, status_code):
-    response = jsonify(message)
+def send_response(content, status_code):
+    response = jsonify(content)
     response.status_code = status_code
     return response
 

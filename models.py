@@ -53,4 +53,3 @@ class Payment(db.Model):
         nullable=False
     )
 
-

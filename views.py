@@ -4,7 +4,7 @@ from flask import Blueprint
 
 from forms import PaymentForm
 from models import Invoice, db, Payment
-from utils import send_json_response, send_code_confirm_payment_to_client, \
+from utils import send_response, send_code_confirm_payment_to_client, \
     get_payment_key
 
 views = Blueprint('views', __name__)
@@ -14,39 +14,43 @@ from middleware import *
 
 @views.route('/v1/invoices/<num>/balances', methods=['GET'])
 def show_balance_invoice(num):
-    """
-     http GET http://127.0.0.1:5000/v1/invoices/5956f/balances
-     api_key=ccc42a8314596799
-    """
     try:
         invoice = Invoice.query.filter_by(num=num).first()
-        return send_json_response(
-            message={
+        return send_response(
+            {
+                'message': 'ok',
                 'balance': str(invoice.balance)
             },
-            status_code=200
+            200
         )
     except (KeyError, AttributeError):
-        return send_json_response(
-            message={
-                'error': 'Number invoice does not exists'
+        return send_response(
+            {
+                'message': 'Number invoice does not exists'
             },
-            status_code=404
+            404
         )
 
 
 @views.route('/v1/payments', methods=['POST'])
 def create_payment():
-    """
-    http POST http://127.0.0.1:5000/v1/payments
-    api_key=ccc42a8314596799
-    amount_money=300
-    invoice_provider=5956
-    invoice_reciever=5956
-    """
     form = PaymentForm()
     if form.validate_on_submit():
         payment = request.get_json()
+
+        if not is_exists_invoices(
+            [
+                payment['number_invoice_provider'],
+                payment['number_invoice_reciever']
+            ]
+        ):
+            return send_response(
+                {
+                    'message': 'Invoices does not exists'
+                },
+                404
+            )
+
         key = get_payment_key()
         code_confirm = randint(100, 1000)
 
@@ -64,23 +68,26 @@ def create_payment():
 
         send_code_confirm_payment_to_client(code_confirm)
 
-        return send_json_response(
-            message={'message': 'ok'},
-            status_code=200
+        return send_response(
+            {
+                'message': 'ok'
+            },
+            200
         )
 
-    return send_json_response(
-        message=form.errors,
-        status_code=400
+    return send_response(
+        form.errors,
+        400
     )
+
+
+def is_exists_invoices(invoice_list):
+    invoices = Invoice.query.filter(Invoice.num.in_(invoice_list)).all()
+    return len(invoices) == len(invoice_list)
 
 
 @views.route('/v1/payments/confirm', methods=['POST'])
 def confirm_payment():
-    """
-     http GET http://127.0.0.1:5000/v1/payments/confirm
-     api_key=ccc42a8314596799 invoice=5956 code=372
-    """
     req = request.get_json()
 
     payment = Payment.query.filter_by(
@@ -89,12 +96,17 @@ def confirm_payment():
     ).scalar()
 
     if payment:
-        return send_json_response(
-            message={'key': payment.key},
-            status_code=200
+        return send_response(
+            {
+                'message': 'ok',
+                'key': payment.key
+            },
+            200
         )
 
-    return send_json_response(
-        message={'message': 'Invalid code'},
-        status_code=400
+    return send_response(
+        {
+            'message': 'Invalid code'
+        },
+        400
     )
