@@ -17,18 +17,16 @@ def show_balance_invoice(num):
     try:
         invoice = Invoice.query.filter_by(num=num).first()
         return send_response(
-            {
+            content={
                 'message': 'ok',
                 'balance': str(invoice.balance)
             },
-            200
+            status_code=200
         )
     except (KeyError, AttributeError):
         return send_response(
-            {
-                'message': 'Number invoice does not exists'
-            },
-            404
+            content={'message': 'Number invoice does not exists'},
+            status_code=404
         )
 
 
@@ -39,16 +37,14 @@ def create_payment():
         payment = request.get_json()
 
         if not is_exists_invoices(
-            [
+            invoice_list=[
                 payment['number_invoice_provider'],
                 payment['number_invoice_reciever']
             ]
         ):
             return send_response(
-                {
-                    'message': 'Invoices does not exists'
-                },
-                404
+                content={'message': 'Invoices does not exists'},
+                status_code=404
             )
 
         key = get_payment_key()
@@ -66,24 +62,22 @@ def create_payment():
         )
         db.session.commit()
 
-        send_code_confirm_payment_to_client(code_confirm)
+        send_code_confirm_payment_to_client(code=code_confirm)
 
         return send_response(
-            {
-                'message': 'ok'
-            },
-            200
+            content={'message': 'ok'},
+            status_code=200
         )
 
     return send_response(
-        form.errors,
-        400
+        content=form.errors,
+        status_code=400
     )
 
 
 def is_exists_invoices(invoice_list):
-    invoices = Invoice.query.filter(Invoice.num.in_(invoice_list)).all()
-    return len(invoices) == len(invoice_list)
+    invoices = Invoice.query.filter(Invoice.num.in_(invoice_list)).count()
+    return invoices == len(invoice_list)
 
 
 @views.route('/v1/payments/confirm', methods=['POST'])
@@ -97,16 +91,14 @@ def confirm_payment():
 
     if payment:
         return send_response(
-            {
+            content={
                 'message': 'ok',
                 'key': payment.key
             },
-            200
+            status_code=200
         )
 
     return send_response(
-        {
-            'message': 'Invalid code'
-        },
-        400
+        content={'message': 'Invalid code'},
+        status_code=400
     )
