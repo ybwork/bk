@@ -21,3 +21,11 @@ class PaymentForm(FlaskForm):
     )
 
 
+class PaymentPerformForm(FlaskForm):
+    key = StringField(
+        'key',
+        validators=[
+            DataRequired(),
+            Length(5)
+        ]
+    )

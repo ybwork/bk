@@ -111,8 +111,10 @@ def perform_payment():
     # на вход ключ операции
 
     # берем из таблицы payment номер счетов по ключу операции
+    # payment = Payment.query.filter_by(key=request.key)
 
-    # идем в таблицу invoice и переводим со счета number_invoice_provider на счет number_invoice_reciever
+    # идем в таблицу invoice и переводим со счета
+    # number_invoice_provider на счет number_invoice_reciever
 
     # идем в таблицу payment и меняем статус платежа на завершен
     pass
