@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_migrate import Migrate
 
-from error_handlers import method_not_allowed
+from error_handlers import method_not_allowed, not_found
 from models import db
 from views import views
 
@@ -9,6 +9,7 @@ app = Flask(__name__)
 app.config.from_pyfile('settings.py', silent=True)
 app.register_blueprint(views)
 app.register_error_handler(405, method_not_allowed)
+app.register_error_handler(404, not_found)
 db.init_app(app)
 migrate = Migrate(app, db)
 

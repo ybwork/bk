@@ -110,36 +110,30 @@ def confirm_payment():
 @views.route('/v1/payments/perform', methods=['POST'])
 def perform_payment():
     form = PaymentPerformForm()
-    if not form.validate_on_submit():
+    if form.validate_on_submit():
+        payment = Payment.query.filter_by(key=form.key.data).first_or_404()
+
+        provider, reciever = Invoice.query.filter(
+            Invoice.num.in_(
+                [
+                    payment.number_invoice_provider,
+                    payment.number_invoice_reciever
+                ]
+            )
+        )
+        provider.balance = provider.balance - payment.amount_money
+        reciever.balance = reciever.balance + payment.amount_money
+
+        payment.status_id = 3
+
+        db.session.add_all([provider, reciever, payment])
+        db.session.commit()
+
         return send_response(
-            content=form.errors,
-            status_code=400
+            content={'message': 'ok'},
+            status_code=200
         )
-
-    payment = Payment.query.filter_by(key=form.key.data).scalar()
-    if not payment:
-        return send_response(
-            content={'message': 'Invalid key'},
-            status_code=400
-        )
-
-    provider, reciever = Invoice.query.filter(
-        Invoice.num.in_(
-            [
-                payment.number_invoice_provider,
-                payment.number_invoice_reciever
-            ]
-        )
-    )
-    provider.balance = provider.balance - payment.amount_money
-    reciever.balance = reciever.balance + payment.amount_money
-
-    payment.status_id = 3
-
-    db.session.add_all([provider, reciever, payment])
-    db.session.commit()
-
     return send_response(
-        content={'message': 'ok'},
-        status_code=200
+        content=form.errors,
+        status_code=400
     )
