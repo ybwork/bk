@@ -1,6 +1,7 @@
 from random import randint
 
 from flask import Blueprint
+from sqlalchemy.orm import sessionmaker
 
 from forms import PaymentForm, PaymentPerformForm
 from models import Invoice, db, Payment
@@ -122,11 +123,22 @@ def perform_payment():
             status_code=400
         )
 
-    
-    # идем в таблицу invoice и переводим со счета
-    # number_invoice_provider на счет number_invoice_reciever
+    provider, reciever = Invoice.query.filter(
+        Invoice.num.in_(
+            [
+                payment.number_invoice_provider,
+                payment.number_invoice_reciever
+            ]
+        )
+    )
+    provider.balance = provider.balance - payment.amount_money
+    reciever.balance = reciever.balance + payment.amount_money
 
-    # идем в таблицу payment и меняем статус платежа на завершен
+    payment.status_id = 3
+
+    db.session.add_all([provider, reciever, payment])
+    db.session.commit()
+
     return send_response(
         content={'message': 'ok'},
         status_code=200
