@@ -90,6 +90,8 @@ def confirm_payment():
     ).scalar()
 
     if payment:
+        # меняем статус платежа на подтвержден
+
         return send_response(
             content={
                 'message': 'ok',
@@ -102,3 +104,15 @@ def confirm_payment():
         content={'message': 'Invalid code'},
         status_code=400
     )
+
+
+@views.route('/v1/payments/perform', methods=['POST'])
+def perform_payment():
+    # на вход ключ операции
+
+    # берем из таблицы payment номер счетов по ключу операции
+
+    # идем в таблицу invoice и переводим со счета number_invoice_provider на счет number_invoice_reciever
+
+    # идем в таблицу payment и меняем статус платежа на завершен
+    pass
