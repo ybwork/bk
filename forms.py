@@ -21,11 +21,27 @@ class PaymentForm(FlaskForm):
     )
 
 
-class PaymentPerformForm(FlaskForm):
+class ConfirmPaymentForm(FlaskForm):
+    invoice = StringField(
+        'invoice',
+        validators=[
+            DataRequired(),
+            Length(max=5)
+        ]
+    )
+    code_confirm = IntegerField(
+        'code_confirm',
+        validators=[
+            DataRequired()
+        ]
+    )
+
+
+class PerformPaymentForm(FlaskForm):
     key = StringField(
         'key',
         validators=[
             DataRequired(),
-            Length(5)
+            Length(max=5)
         ]
     )
