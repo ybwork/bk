@@ -109,19 +109,25 @@ def confirm_payment():
 @views.route('/v1/payments/perform', methods=['POST'])
 def perform_payment():
     form = PaymentPerformForm()
-    if form.validate_on_submit():
-        # берем из таблицы payment номер счетов по ключу операции
-        # payment = Payment.query.filter_by(key=request.key)
-
-        # идем в таблицу invoice и переводим со счета
-        # number_invoice_provider на счет number_invoice_reciever
-
-        # идем в таблицу payment и меняем статус платежа на завершен
+    if not form.validate_on_submit():
         return send_response(
-            content={'message': 'ok'},
-            status_code=200
+            content=form.errors,
+            status_code=400
         )
+
+    payment = Payment.query.filter_by(key=form.key.data).scalar()
+    if not payment:
+        return send_response(
+            content={'message': 'Invalid key'},
+            status_code=400
+        )
+
+    
+    # идем в таблицу invoice и переводим со счета
+    # number_invoice_provider на счет number_invoice_reciever
+
+    # идем в таблицу payment и меняем статус платежа на завершен
     return send_response(
-        content=form.errors,
-        status_code=400
+        content={'message': 'ok'},
+        status_code=200
     )
