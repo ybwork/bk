@@ -12,9 +12,9 @@ views = Blueprint('views', __name__)
 from middleware import *
 
 
-@views.route('/v1/invoices/<num>/balances', methods=['GET'])
+@views.route('/v1/invoices/<string:num>/balances', methods=['GET'])
 def show_balance_invoice(num):
-    invoice = Invoice.query.filter_by(num=num).first_or_404()
+    invoice = Invoice.query.filter_by(num=num).get_or_404()
     return send_response(
         content={
             'message': 'ok',
@@ -77,7 +77,7 @@ def confirm_payment():
         payment = Payment.query.filter_by(
             number_invoice_provider=form.invoice.data,
             code_confirm=form.code_confirm.data
-        ).first_or_404()
+        ).get_or_404()
         payment.status_id = 2
         db.session.add(payment)
         db.session.commit()
@@ -104,7 +104,7 @@ def perform_payment():
             status_code=400
         )
 
-    payment = Payment.query.filter_by(key=form.key.data).first_or_404()
+    payment = Payment.query.filter_by(key=form.key.data).get_or_404()
     if not is_payment_available(payment.status_id):
         return send_response(
             content={'message': 'Payment is not available'},
