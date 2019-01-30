@@ -105,25 +105,25 @@ def perform_payment():
         )
 
     payment = Payment.query.filter_by(key=form.key.data).first_or_404()
-    if not is_payment_available(payment.status_id):
+    if not payment.is_payment_available():
         return send_response(
             content={'message': 'Payment is not available'},
             status_code=400
         )
 
-    provider, reciever = Invoice.query.filter(
-        Invoice.num.in_(
-            [
-                payment.number_invoice_provider,
-                payment.number_invoice_reciever
-            ]
-        )
-    )
-    provider.balance = provider.balance - payment.amount_money
-    reciever.balance = reciever.balance + payment.amount_money
-    payment.status_id = 3
-    db.session.add_all([provider, reciever, payment])
-    db.session.commit()
+    # provider, reciever = Invoice.query.filter(
+    #     Invoice.num.in_(
+    #         [
+    #             payment.number_invoice_provider,
+    #             payment.number_invoice_reciever
+    #         ]
+    #     )
+    # )
+    # provider.balance = provider.balance - payment.amount_money
+    # reciever.balance = reciever.balance + payment.amount_money
+    # payment.status_id = 3
+    # db.session.add_all([provider, reciever, payment])
+    # db.session.commit()
 
     return send_response(
         content={'message': 'ok'},
@@ -131,5 +131,5 @@ def perform_payment():
     )
 
 
-def is_payment_available(payment_status):
-    return payment_status == 2
+# def is_payment_available(payment_status):
+#     return payment_status == 2

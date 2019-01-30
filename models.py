@@ -53,3 +53,5 @@ class Payment(db.Model):
         nullable=False
     )
 
+    def is_payment_available(self):
+        return self.status_id == 2
