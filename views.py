@@ -74,6 +74,7 @@ def is_exists_invoices(invoice_list):
 def confirm_payment():
     form = ConfirmPaymentForm()
     if form.validate_on_submit():
+        print(1)
         payment = Payment.query.filter_by(
             number_invoice_provider=form.invoice.data,
             code_confirm=form.code_confirm.data
