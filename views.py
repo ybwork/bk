@@ -53,7 +53,7 @@ def create_payment():
             number_invoice_provider=form.number_invoice_provider.data,
             number_invoice_reciever=form.number_invoice_reciever.data,
             code_confirm=code_confirm,
-            status_id=1
+            status=Payment.NOT_CONFIRMED
         )
     )
     db.session.commit()
@@ -78,7 +78,7 @@ def confirm_payment():
             number_invoice_provider=form.invoice.data,
             code_confirm=form.code_confirm.data
         ).first_or_404()
-        payment.status_id = 2
+        payment.status = Payment.CONFIRMED
         db.session.add(payment)
         db.session.commit()
 
@@ -121,7 +121,7 @@ def perform_payment():
     )
     provider.balance = provider.balance - payment.amount_money
     reciever.balance = reciever.balance + payment.amount_money
-    payment.status_id = 3
+    payment.status = Payment.PERFORM
     db.session.add_all([provider, reciever, payment])
     db.session.commit()
 

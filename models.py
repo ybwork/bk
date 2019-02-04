@@ -35,11 +35,6 @@ class Invoice(db.Model):
     )
 
 
-class StatusPayment(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False)
-
-
 class Payment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     key = db.Column(db.String(5), nullable=False)
@@ -47,11 +42,16 @@ class Payment(db.Model):
     number_invoice_provider = db.Column(db.String(5), index=True, nullable=False)
     number_invoice_reciever = db.Column(db.String(5), nullable=False)
     code_confirm = db.Column(db.Integer, index=True, nullable=True)
-    status_id = db.Column(
-        db.Integer,
-        db.ForeignKey('status_payment.id'),
-        nullable=False
+
+    NOT_CONFIRMED = 'не подтвержден'
+    CONFIRMED = 'подтвержден'
+    PERFORM = 'выполнен'
+    CANCELED = 'отменен'
+    status = db.Column(
+        db.String(255),
+        nullable=False,
+        index=True
     )
 
     def is_payment_available(self):
-        return self.status_id == 2
+        return self.status == self.CONFIRMED
